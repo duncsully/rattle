@@ -2,7 +2,6 @@ import { LitElement, css, html } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { choose } from "lit/directives/choose.js";
 import { map } from "lit/directives/map.js";
-import words from "./words.json";
 import { when } from "lit/directives/when.js";
 import { styleMap } from "lit/directives/style-map.js";
 import "./countdown-timer";
@@ -15,6 +14,8 @@ import "./countdown-timer";
  */
 @customElement("rattle-game")
 export class RattleGame extends LitElement {
+  @state() words: Record<string, number> | null = null;
+
   @state()
   private guesses = new Set<string>();
 
@@ -29,12 +30,22 @@ export class RattleGame extends LitElement {
     }, 0);
   }
 
+  constructor() {
+    super();
+    import("./words.json").then(
+      (words) => (this.words = words.default as Record<string, number>)
+    );
+  }
+
   _startGame() {
     this.stage = "intro";
     this.guesses = new Set<string>();
   }
 
   render() {
+    if (!this.words) {
+      return html`<p>Loading...</p>`;
+    }
     return html`
       <div class="card">
         <h1>Rattle</h1>
@@ -83,8 +94,7 @@ export class RattleGame extends LitElement {
                   const form = e.target as HTMLFormElement;
                   const guess = form.guess.value as string;
                   const lowercase = guess.toLowerCase();
-                  const allWords = words as Record<string, number>;
-                  if (allWords[lowercase]) {
+                  if (this.words![lowercase]) {
                     this.guesses.add(lowercase);
                     this.guesses = new Set(this.guesses);
                   }
