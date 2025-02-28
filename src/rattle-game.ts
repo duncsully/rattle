@@ -43,7 +43,9 @@ export class RattleGame extends LitElement {
           [
             "pre",
             () => html`<div>
-              <button @click=${this._startGame}>Start</button>
+              <button @click=${this._startGame}>
+                ${this.guesses.size ? "New game" : "Start"}
+              </button>
               ${when(
                 this.guesses.size,
                 () => html`<p>Score: ${this.score}</p>`
@@ -89,6 +91,7 @@ export class RattleGame extends LitElement {
 
                   form.reset();
                 }}
+                style="margin-top: 1em;"
               >
                 <input
                   name="guess"
@@ -172,15 +175,6 @@ export class RattleGame extends LitElement {
       background-color: #f9f9f9;
       color: #1a1a1a;
       transition: border-color 0.25s;
-    }
-
-    @media (prefers-color-scheme: light) {
-      a:hover {
-        color: #747bff;
-      }
-      button {
-        background-color: #f9f9f9;
-      }
     }
   `;
 }
